@@ -8,8 +8,8 @@ var loader = preloader({
   xhrImages: false,
   loadFullAudio: true,
 });
-loader.add('/scary.jpg');
-loader.add('/scream.mp3');
+loader.add(`${process.env.PUBLIC_URL}/scary.jpg`);
+loader.add(`${process.env.PUBLIC_URL}/scream.mp3`);
 loader.load();
 
 ReactDOM.render(
