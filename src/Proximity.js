@@ -7,7 +7,7 @@ Number.isInteger = Number.isInteger || function(value) {
     isFinite(value) && 
     Math.floor(value) === value;
 };
-const SCARE_EM_GOOD = 4; // 4 inches closer
+const SCARE_EM_GOOD = 6; // 6 inches closer
 
 var percentages = [];
 
@@ -23,6 +23,7 @@ function percentageToInches(p) {
   return 49 * Math.exp(-0.023 * p);
 }
 
+
 class Proximity extends React.Component {
   constructor() {
     super(...arguments);
@@ -34,6 +35,8 @@ class Proximity extends React.Component {
     const viewport = this.viewport;
     const canvas = this.canvas;
     const context = canvas.getContext('2d');
+    const glasses = new Image();
+    glasses.src = `${process.env.PUBLIC_URL}/glasses.png`;
 
     mediaDevices.getUserMedia({
       audio: false,
@@ -54,6 +57,7 @@ class Proximity extends React.Component {
           faces.forEach(function(face) {
             var percentage = 100 * face.height / canvas.height;
             percentages.push(percentage);
+            context.drawImage(glasses, face.x, face.y, face.width, face.height);
           });
           const inches = Math.round(percentageToInches(rollingAverage(5)));
           if (!Number.isInteger(inches)) return null;
@@ -89,24 +93,28 @@ class Proximity extends React.Component {
         bottom: 0,
         display: 'flex',
       }}>
-        <canvas 
-          style={{ display: 'none' }}
-          ref={((canvas) => this.canvas = canvas)} 
-          width={266} 
-          height={200} 
-        />
+        <div style={{
+          margin: 'auto',
+        }}>
+          <canvas 
+            ref={((canvas) => this.canvas = canvas)} 
+            width={532} 
+            height={400} 
+            style={{
+              width: 532,
+              height: 400,
+            }}
+          />
+          <div style={{
+            textAlign: 'center',
+          }}>Try turning on your sound &amp; getting closer for more effects!</div>
+        </div>
         <video 
           style={{display: 'none'}}
           ref={((viewport) => this.viewport = viewport)}/>         
         {this.state.scary && this.state.inches
           ? <Scary />
-          : (
-            <div style={{
-              textAlign: 'center',
-              font: '32px Helvetica',
-              margin: 'auto',
-            }}>I think you are {this.state.inches} inches away.</div>
-          )
+          : null
         }
       </div>
     );
