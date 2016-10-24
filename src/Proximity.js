@@ -2,6 +2,11 @@
 import React from 'react';
 import Scary from './Scary';
 import mediaDevices from './getUserMedia';
+Number.isInteger = Number.isInteger || function(value) {
+  return typeof value === "number" && 
+    isFinite(value) && 
+    Math.floor(value) === value;
+};
 
 var percentages = [];
 
@@ -21,7 +26,6 @@ class Proximity extends React.Component {
   constructor() {
     super(...arguments);
     this.state = {
-      runs: 0,
       scary: false,
     };
   }
@@ -50,10 +54,10 @@ class Proximity extends React.Component {
             var percentage = 100 * face.height / canvas.height;
             percentages.push(percentage);
           });
-          const inches = percentageToInches(rollingAverage(5)).toFixed(0);
-          if (inches && this.state.runs > 10 && !this.start) {
-            this.start = inches;
-          }
+          const inches = Math.round(percentageToInches(rollingAverage(5)));
+          if (!Number.isInteger(inches)) return null;
+
+          this.start = Math.max(this.start || 0, inches);
 
           if (this.start && ((this.start - inches) >= 3)) {
             this.setState({
@@ -63,7 +67,6 @@ class Proximity extends React.Component {
 
           this.setState({
             inches,
-            runs: this.state.runs + 1,
           });
 
         }, 200);
