@@ -7,6 +7,7 @@ Number.isInteger = Number.isInteger || function(value) {
     isFinite(value) && 
     Math.floor(value) === value;
 };
+const SCARE_EM_GOOD = 4; // 4 inches closer
 
 var percentages = [];
 
@@ -59,7 +60,7 @@ class Proximity extends React.Component {
 
           this.start = Math.max(this.start || 0, inches);
 
-          if (this.start && ((this.start - inches) >= 3)) {
+          if (this.start && ((this.start - inches) >= SCARE_EM_GOOD)) {
             this.setState({
               scary: true,
             });
@@ -80,7 +81,14 @@ class Proximity extends React.Component {
   }
   render() {
     return (
-      <div>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: 'flex',
+      }}>
         <canvas 
           style={{ display: 'none' }}
           ref={((canvas) => this.canvas = canvas)} 
@@ -95,8 +103,8 @@ class Proximity extends React.Component {
           : (
             <div style={{
               textAlign: 'center',
-              font: '16px Helvetica',
-              padding: 40,
+              font: '32px Helvetica',
+              margin: 'auto',
             }}>I think you are {this.state.inches} inches away.</div>
           )
         }
